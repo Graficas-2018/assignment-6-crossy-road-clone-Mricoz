@@ -19,6 +19,9 @@ var cars = [];
 var trees = [];
 var logs = [];
 var game = false;
+var clock = new THREE.Clock();
+var carCount = 0;
+var score = 0;
 
 function createSections() {
     // First section == grass
@@ -27,6 +30,7 @@ function createSections() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -.75;
     mesh.position.z = -2;
+    mesh.tag = 'grass';
     group.add(mesh);
 
     for(var i = 0; i <= 15; i++) { /////// ******************** TREES
@@ -48,6 +52,7 @@ function createSections() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -.75;
     mesh.position.z = -8;
+    mesh.tag = 'road';
     group.add(mesh);
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** CARS
@@ -69,6 +74,7 @@ function createSections() {
     water.rotation.x = -Math.PI / 2;
     water.position.y = -.75;
     water.position.z = -14;
+    water.tag = 'water';
     group.add(water);
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** LOGS
@@ -90,6 +96,7 @@ function createSections() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -.75;
     mesh.position.z = -20;
+    mesh.tag = 'grass';
     group.add(mesh);
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** TREES
@@ -107,11 +114,12 @@ function createSections() {
 
     // Fifth section == water
     geometry = new THREE.PlaneGeometry(200, 6, 50, 50);
-    mesh = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:0x00ffff, side:THREE.DoubleSide}));
-    mesh.rotation.x = -Math.PI / 2;
-    mesh.position.y = -.75;
-    mesh.position.z = -26;
-    group.add(mesh);
+    water = new THREE.Mesh(geometry, new THREE.MeshPhongMaterial({color:0x00ffff, side:THREE.DoubleSide}));
+    water.rotation.x = -Math.PI / 2;
+    water.position.y = -.75;
+    water.position.z = -26;
+    water.tag = 'water';
+    group.add(water);
 
     for(var i = 0; i <= 15; i++) { /////// ******************** LOGS
         var material = new THREE.MeshPhongMaterial({ color: 0x783F04 });
@@ -132,6 +140,7 @@ function createSections() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -.75;
     mesh.position.z = -32;
+    mesh.tag = 'road';
     group.add(mesh);
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** CARS
@@ -153,6 +162,7 @@ function createSections() {
     mesh.rotation.x = -Math.PI / 2;
     mesh.position.y = -.75;
     mesh.position.z = -38;
+    mesh.tag = 'grass';
     group.add(mesh);
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** TREES
@@ -175,18 +185,23 @@ function onKeyDown(event){
         switch(event.keyCode){
             case 38:
                 chicken.position.z -= 1;
+                score++;
                 break;
             case 37:
                 chicken.position.x -= 1;
+                score++;
                 break;
             case 39:
                 chicken.position.x += 1;
+                score++;
                 break;
-            case 40:
-                chicken.position.z += 1;
-                break;
+            // case 40:
+            //     chicken.position.z += 1;
+            //     score++;
+            //     break;
         }
         key_pressed = true;
+        // console.log(score);
     }
 }
 
@@ -206,18 +221,42 @@ function run() {
     orbitControls.update();
 
     if(game){
-          checkCollisions(); // Check for colisions
+        moveObjects();
+        checkCollisions(); // Check for colisions
     }
+}
+
+function moveObjects(){
+    var delta = clock.getDelta();
+
+    for (car of cars) {
+        if(car.position.x > 100){
+            car.position.x = -100;
+        } else {
+            car.translateX(delta * 5);
+        }
+    }
+
+    for (log of logs) {
+        if(log.position.x < -100){
+            log.position.x = 100;
+        } else {
+            log.translateX(-(delta * 5));
+        }
+    }
+    document.getElementById("score").innerHTML = "Score: " + score;
 }
 
 function checkCollisions(){
     // console.log("Collisions");
+
     var chickenBox = new THREE.Box3().setFromObject(chicken);
 
     for (var i = 0; i < cars.length; i++) {
         var carBox = new THREE.Box3().setFromObject(cars[i]);
         if (chickenBox.intersectsBox(carBox)){
           console.log('COLLISION WITH CAR');
+          chicken.position.z = 0;
         }
     }
 
