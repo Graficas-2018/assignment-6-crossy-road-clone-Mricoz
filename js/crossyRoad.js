@@ -22,6 +22,7 @@ var game = false;
 var clock = new THREE.Clock();
 var carCount = 0;
 var score = 0;
+var highScore = 0;
 
 function createSections() {
     // First section == grass
@@ -189,11 +190,9 @@ function onKeyDown(event){
                 break;
             case 37:
                 chicken.position.x -= 1;
-                score++;
                 break;
             case 39:
                 chicken.position.x += 1;
-                score++;
                 break;
             // case 40:
             //     chicken.position.z += 1;
@@ -245,6 +244,7 @@ function moveObjects(){
         }
     }
     document.getElementById("score").innerHTML = "Score: " + score;
+    document.getElementById("highScore").innerHTML = "High-Score: " + highScore;
 }
 
 function checkCollisions(){
@@ -258,6 +258,10 @@ function checkCollisions(){
           console.log('COLLISION WITH CAR');
           chicken.position.z = 0;
           chicken.position.x = 0;
+          if(highScore < score){
+              highScore = score;
+          }
+          score = 0;
         }
     }
 
