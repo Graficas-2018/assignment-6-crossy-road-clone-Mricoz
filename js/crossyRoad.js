@@ -257,6 +257,7 @@ function checkCollisions(){
         if (chickenBox.intersectsBox(carBox)){
           console.log('COLLISION WITH CAR');
           chicken.position.z = 0;
+          chicken.position.x = 0;
         }
     }
 
