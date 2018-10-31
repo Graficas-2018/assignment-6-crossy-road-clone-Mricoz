@@ -1,5 +1,3 @@
-// TODO: CAMBIAR FORMA DE LOS DIFRERENTES OBJETOS, INTERACCIONES CAMBIO DE SOLO UN CONSOLE LOG, SCORE Y RESTART.
-
 var renderer = null,
 scene = null,
 camera = null,
@@ -34,9 +32,9 @@ function createSections() {
     mesh.tag = 'grass';
     group.add(mesh);
 
-    for(var i = 0; i <= 15; i++) { /////// ******************** TREES
+    for(var i = 0; i <= 20; i++) { /////// ******************** TREES
         var material = new THREE.MeshPhongMaterial({ color: 0x2F7610 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(1, 3, 1);
         tree = new THREE.Mesh(geometry, material);
         tree.position.x = Math.random() * (110 - -110) + -110;
         tree.position.y = 0;
@@ -56,9 +54,9 @@ function createSections() {
     mesh.tag = 'road';
     group.add(mesh);
 
-    for(var i = 0; i <= 15; i++) {  /////// ******************** CARS
+    for(var i = 0; i <= 20; i++) {  /////// ******************** CARS
         var material = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(2, 1, 1);
         car = new THREE.Mesh(geometry, material);
         car.position.x = Math.random() * (110 - -110) + -110;
         car.position.y = 0;
@@ -80,7 +78,7 @@ function createSections() {
 
     for(var i = 0; i <= 15; i++) {  /////// ******************** LOGS
         var material = new THREE.MeshPhongMaterial({ color: 0x783F04 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(2, .5, 1);
         log = new THREE.Mesh(geometry, material);
         log.position.x = Math.random() * (110 - -110) + -110;
         log.position.y = 0;
@@ -100,9 +98,9 @@ function createSections() {
     mesh.tag = 'grass';
     group.add(mesh);
 
-    for(var i = 0; i <= 15; i++) {  /////// ******************** TREES
+    for(var i = 0; i <= 20; i++) {  /////// ******************** TREES
         var material = new THREE.MeshPhongMaterial({ color: 0x2F7610 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(1, 3, 1);
         tree = new THREE.Mesh(geometry, material);
         tree.position.x = Math.random() * (110 - -110) + -110;
         tree.position.y = 0;
@@ -124,7 +122,7 @@ function createSections() {
 
     for(var i = 0; i <= 15; i++) { /////// ******************** LOGS
         var material = new THREE.MeshPhongMaterial({ color: 0x783F04 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(2, .5, 1);
         log = new THREE.Mesh(geometry, material);
         log.position.x = Math.random() * (110 - -110) + -110;
         log.position.y = 0;
@@ -144,9 +142,9 @@ function createSections() {
     mesh.tag = 'road';
     group.add(mesh);
 
-    for(var i = 0; i <= 15; i++) {  /////// ******************** CARS
+    for(var i = 0; i <= 20; i++) {  /////// ******************** CARS
         material = new THREE.MeshPhongMaterial({ color: 0xFF0000 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(2, 1, 1);
         car = new THREE.Mesh(geometry, material);
         car.position.x = Math.random() * (100 - -100) + -100;
         car.position.y = 0;
@@ -166,9 +164,9 @@ function createSections() {
     mesh.tag = 'grass';
     group.add(mesh);
 
-    for(var i = 0; i <= 15; i++) {  /////// ******************** TREES
+    for(var i = 0; i <= 20; i++) {  /////// ******************** TREES
         var material = new THREE.MeshPhongMaterial({ color: 0x2F7610 });
-        geometry = new THREE.CubeGeometry(1, 1, 1);
+        geometry = new THREE.CubeGeometry(1, 3, 1);
         tree = new THREE.Mesh(geometry, material);
         tree.position.x = Math.random() * (110 - -110) + -110;
         tree.position.y = 0;
@@ -187,6 +185,16 @@ function onKeyDown(event){
             case 38:
                 chicken.position.z -= 1;
                 score++;
+                if(chicken.position.z <= -34){
+                    chicken.position.z = 0;
+                    chicken.position.x = 0;
+                    camera.position.set(0, 6, 10);
+                    if(highScore < score){
+                        highScore = score;
+                    }
+                    score = 0;
+                    console.log('WIN');
+                }
                 break;
             case 37:
                 chicken.position.x -= 1;
@@ -249,6 +257,7 @@ function moveObjects(){
 
 function checkCollisions(){
     // console.log("Collisions");
+    var delta = clock.getDelta();
 
     var chickenBox = new THREE.Box3().setFromObject(chicken);
 
@@ -275,7 +284,7 @@ function checkCollisions(){
     for (var k = 0; k < trees.length; k++) {
         var treeBox = new THREE.Box3().setFromObject(trees[k]);
         if (chickenBox.intersectsBox(treeBox)){
-          console.log('COLLISION WITH TREE');
+            console.log('COLLISION WITH TREE');
         }
     }
 }
