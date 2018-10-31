@@ -21,6 +21,9 @@ var clock = new THREE.Clock();
 var carCount = 0;
 var score = 0;
 var highScore = 0;
+var chickenBox = null, carBox = null, treeBox = null, logbox = null;
+var gameDuration = 10;
+var timer = new THREE.Clock(false);
 
 function createSections() {
     // First section == grass
@@ -76,9 +79,9 @@ function createSections() {
     water.tag = 'water';
     group.add(water);
 
-    for(var i = 0; i <= 15; i++) {  /////// ******************** LOGS
+    for(var i = 0; i <= 25; i++) {  /////// ******************** LOGS
         var material = new THREE.MeshPhongMaterial({ color: 0x783F04 });
-        geometry = new THREE.CubeGeometry(2, .5, 1);
+        geometry = new THREE.CubeGeometry(3, .5, 1);
         log = new THREE.Mesh(geometry, material);
         log.position.x = Math.random() * (110 - -110) + -110;
         log.position.y = 0;
@@ -120,9 +123,9 @@ function createSections() {
     water.tag = 'water';
     group.add(water);
 
-    for(var i = 0; i <= 15; i++) { /////// ******************** LOGS
+    for(var i = 0; i <= 25; i++) { /////// ******************** LOGS
         var material = new THREE.MeshPhongMaterial({ color: 0x783F04 });
-        geometry = new THREE.CubeGeometry(2, .5, 1);
+        geometry = new THREE.CubeGeometry(3, .5, 1);
         log = new THREE.Mesh(geometry, material);
         log.position.x = Math.random() * (110 - -110) + -110;
         log.position.y = 0;
@@ -195,6 +198,17 @@ function onKeyDown(event){
                     score = 0;
                     console.log('WIN');
                 }
+                //console.log(chicken.position.z);
+                if((chicken.position.z <= -11 && chicken.position.z >= -17) || (chicken.position.z <= -23 && chicken.position.z >= -29) ){
+                    console.log('U R IN WATER');
+                    chicken.position.z = 0;
+                    chicken.position.x = 0;
+                    if(highScore < score){
+                        highScore = score;
+                    }
+                    score = 0;
+                    // timer.start();
+                }
                 break;
             case 37:
                 chicken.position.x -= 1;
@@ -202,10 +216,9 @@ function onKeyDown(event){
             case 39:
                 chicken.position.x += 1;
                 break;
-            // case 40:
-            //     chicken.position.z += 1;
-            //     score++;
-            //     break;
+            case 40:
+                chicken.position.z += 1;
+                break;
         }
         key_pressed = true;
         // console.log(score);
@@ -234,8 +247,17 @@ function run() {
 }
 
 function moveObjects(){
+    if(timer.elapsedTime > gameDuration || !game){
+        chicken.position.z = 0;
+        chicken.position.x = 0;
+        //timer = new THREE.Clock();
+        if(highScore < score){
+            highScore = score;
+        }
+        score = 0;
+    }
     var delta = clock.getDelta();
-
+    // Move cars
     for (car of cars) {
         if(car.position.x > 100){
             car.position.x = -100;
@@ -243,7 +265,7 @@ function moveObjects(){
             car.translateX(delta * 5);
         }
     }
-
+    // Move logs to the other direction
     for (log of logs) {
         if(log.position.x < -100){
             log.position.x = 100;
@@ -253,16 +275,17 @@ function moveObjects(){
     }
     document.getElementById("score").innerHTML = "Score: " + score;
     document.getElementById("highScore").innerHTML = "High-Score: " + highScore;
+    //document.getElementById("timer").innerHTML = "Time left: " + Math.round(gameDuration - timer.elapsedTime) + " s";
 }
 
 function checkCollisions(){
     // console.log("Collisions");
     var delta = clock.getDelta();
 
-    var chickenBox = new THREE.Box3().setFromObject(chicken);
-
+    chickenBox = new THREE.Box3().setFromObject(chicken);
+    // Checks car collisions
     for (var i = 0; i < cars.length; i++) {
-        var carBox = new THREE.Box3().setFromObject(cars[i]);
+        carBox = new THREE.Box3().setFromObject(cars[i]);
         if (chickenBox.intersectsBox(carBox)){
           console.log('COLLISION WITH CAR');
           chicken.position.z = 0;
@@ -273,16 +296,17 @@ function checkCollisions(){
           score = 0;
         }
     }
-
+    // Check log collisions
     for (var j = 0; j < logs.length; j++) {
-        var logBox = new THREE.Box3().setFromObject(logs[j]);
+        logBox = new THREE.Box3().setFromObject(logs[j]);
         if (chickenBox.intersectsBox(logBox)){
           console.log('COLLISION WITH LOG');
+          timer = new THREE.Clock();
         }
     }
-
+    // Check trees collisions
     for (var k = 0; k < trees.length; k++) {
-        var treeBox = new THREE.Box3().setFromObject(trees[k]);
+        treeBox = new THREE.Box3().setFromObject(trees[k]);
         if (chickenBox.intersectsBox(treeBox)){
             console.log('COLLISION WITH TREE');
         }
