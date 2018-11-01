@@ -199,16 +199,6 @@ function onKeyDown(event){
                     console.log('WIN');
                 }
                 //console.log(chicken.position.z);
-                if((chicken.position.z <= -11 && chicken.position.z >= -17) || (chicken.position.z <= -23 && chicken.position.z >= -29) ){
-                    console.log('U R IN WATER');
-                    chicken.position.z = 0;
-                    chicken.position.x = 0;
-                    if(highScore < score){
-                        highScore = score;
-                    }
-                    score = 0;
-                    // timer.start();
-                }
                 break;
             case 37:
                 chicken.position.x -= 1;
@@ -287,7 +277,7 @@ function checkCollisions(){
     for (var i = 0; i < cars.length; i++) {
         carBox = new THREE.Box3().setFromObject(cars[i]);
         if (chickenBox.intersectsBox(carBox)){
-          console.log('COLLISION WITH CAR');
+          //console.log('COLLISION WITH CAR');
           chicken.position.z = 0;
           chicken.position.x = 0;
           if(highScore < score){
@@ -296,19 +286,27 @@ function checkCollisions(){
           score = 0;
         }
     }
-    // Check log collisions
-    for (var j = 0; j < logs.length; j++) {
-        logBox = new THREE.Box3().setFromObject(logs[j]);
-        if (chickenBox.intersectsBox(logBox)){
-          console.log('COLLISION WITH LOG');
-          timer = new THREE.Clock();
+    if((chicken.position.z <= -11 && chicken.position.z >= -17) || (chicken.position.z <= -23 && chicken.position.z >= -29) ){
+        for (var j = 0; j < logs.length; j++) {
+            logBox = new THREE.Box3().setFromObject(logs[j]);
+            if (chickenBox.intersectsBox(logBox)){
+              //console.log('COLLISION WITH LOG');
+              chicken.position.z = 0;
+              chicken.position.x = 0;
+              if(highScore < score){
+                  highScore = score;
+              }
+              score = 0;
+            }
         }
+        //console.log('U R IN WATER');
+        // timer.start();
     }
     // Check trees collisions
     for (var k = 0; k < trees.length; k++) {
         treeBox = new THREE.Box3().setFromObject(trees[k]);
         if (chickenBox.intersectsBox(treeBox)){
-            console.log('COLLISION WITH TREE');
+            //console.log('COLLISION WITH TREE');
         }
     }
 }
